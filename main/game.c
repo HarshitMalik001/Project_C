@@ -1,9 +1,10 @@
 #include <stdio.h>
-
+#include "../include/Mylib.h"
 
 int Welcome()
 {
     int user_choice = 3;
+    int l = -1;
     while(1)
     {
         printf("Welcome To 3 in 1 Game !!!!! \n");
@@ -17,10 +18,18 @@ int Welcome()
         switch (user_choice)
         {
         case 1:
-            //register();
+            rgstr();
             break;
         case 2:
-            //int l = login();
+            l = login();
+            if(l >= 0)
+            {
+                printf("Welcome User s \n");
+            }
+            else
+            {
+                printf("Invalid Details \n");
+            }
             break;
         case 3:
             return 0;
@@ -37,5 +46,18 @@ int Welcome()
 int main()
 {
     Welcome();
+    return 0;
+}
+
+
+int rgstr()
+{
+    printf("Register called\n");
+    return 0;
+}
+
+int login()
+{
+    printf("login called\n");
     return 0;
 }
