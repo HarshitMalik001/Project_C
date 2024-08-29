@@ -1,13 +1,17 @@
 #include <stdio.h>
 #include "../include/Mylib.h"
 #include <string.h>
-#define CRED_LEN 30
+#include <termios.h>
+#include <unistd.h>
+#define CRED_LEN 40
+
 
 typedef struct 
 {
     char username[CRED_LEN];
     char pswd[CRED_LEN];
 } USER_INFO;
+
 
 int max_usr = 10;
 int usr_count = 0;
@@ -18,14 +22,16 @@ USER_INFO User_Info[10];
 int Welcome()
 {
     int user_choice = 3;
-    int l = -1;
+    int usrIndex = -1;
     while(1)
     {
-        printf("Welcome To 3 in 1 Game !!!!! \n");
+        printf("\nWelcome To 3 in 1 Game !!!!! \n");
         printf("Options :- \n");
         printf("1. Register \n");
         printf("2. Login \n");
         printf("3. Exit \n");
+
+        printf("Your Choice: ");
 
         scanf("%d", &user_choice);
 
@@ -36,11 +42,11 @@ int Welcome()
             rgstr();
             break;
         case 2:
-            l = login();
-            if(l >= 0)
+            usrIndex = login();
+            if(usrIndex >= 0)
             {
-                printf("Welcome User s \n");
-                return l;
+                printf("\nWelcome User %s \n", User_Info[usrIndex].username);
+                return usrIndex;
             }
             else
             {
@@ -59,30 +65,61 @@ int Welcome()
     }
 }
 
-int main()
-{
-    while(1)
-    {
-        int a = Welcome();
-        if (a == -1) return 0;
-        printf("currently logged in %s 1. log out \n2. Exit\n",User_Info[a].username);
-        int option = 2;
-        scanf("%d",&option);
 
-        if(option == 2) return 0;
+
+void remove_newline(char *str) {
+    size_t len = strlen(str);
+    if (len > 0 && str[len - 1] == '\n') {
+        str[len - 1] = '\0';
     }
-    return 0;
 }
+
+
 
 int EnterCred(char *username, char *password)
 {
-    printf("Enter User Name : ");
+    printf("\nEnter User Name : ");
     fgets(username, CRED_LEN, stdin);
-    printf("%s",username);
-    printf("Enter User Password : ");
-    fgets(password, CRED_LEN, stdin);
+    remove_newline(username);
+    printf("Enter Password : ");
+    fflush(stdout);
+
+    // terminal
+    struct termios old_one, new_one;
+    tcgetattr(STDIN_FILENO, &old_one);
+    new_one = old_one;
+    new_one.c_lflag &= ~(ECHO | ICANON);
+    tcsetattr(STDIN_FILENO, TCSANOW, &new_one);
+
+    int cur = 0;
+    char chr;
+
+    while ((chr = getchar()) != '\n' && chr != EOF) 
+    {
+        if(chr == '!' ) break;
+        if (chr == '\b' || chr == 127) 
+        {
+            if (cur > 0) 
+            {
+                cur--;
+                printf("\b \b");
+            }
+        } 
+        else 
+        {
+            password[cur++] = chr;
+            printf("*");
+        }
+    }
+
+    password[cur] = '\0';
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &old_one);
+
+    printf("\n");
     return 0;
 }
+
 
 int rgstr()
 {
@@ -90,7 +127,18 @@ int rgstr()
 
     printf("Register User\n");
     EnterCred(User_Info[usr_count].username, User_Info[usr_count].pswd );
-    printf("Registeration Succesful\n");
+
+    for (int i = 0; i < usr_count; i++) 
+    {
+        if (strcmp(User_Info[usr_count].username, User_Info[i].username) == 0 ) 
+        {
+                printf("User name Already Exists \n");
+                return -1;
+        }
+    }
+
+    
+    printf("\nRegisteration Succesful\n");
     usr_count++;
     return 0;
 }
@@ -99,10 +147,13 @@ int login()
 {
     char Username[30];
     char Password[30];
+
     EnterCred(Username, Password);
 
-    for (int i = 0; i < usr_count; i++) {
-        if (strcmp(Username, User_Info[i].username) == 0 && strcmp(Password, User_Info[i].pswd) == 0) {
+    for (int i = 0; i < usr_count; i++) 
+    {
+        if (strcmp(Username, User_Info[i].username) == 0 && strcmp(Password, User_Info[i].pswd) == 0) 
+        {
             return i;
         }
     }
@@ -110,3 +161,24 @@ int login()
     return -1;
 
 }
+
+
+
+int main()
+{
+    while(1)
+    {
+        int a = Welcome();
+        if (a == -1) return 0;
+        printf("currently logged in %s \n1. log out \n2. Exit\n",User_Info[a].username);
+        int option = 2;
+        scanf("%d",&option);
+        getchar();
+
+        if(option == 2) return 0;
+    }
+    return 0;
+}
+
+
+
