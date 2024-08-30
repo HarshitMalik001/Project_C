@@ -1,70 +1,24 @@
 #include <stdio.h>
 #include "../include/Mylib.h"
 #include <string.h>
+#include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
+
+
 #define CRED_LEN 40
 
 
-typedef struct 
-{
-    char username[CRED_LEN];
-    char pswd[CRED_LEN];
-} USER_INFO;
-
-
-int max_usr = 10;
 int usr_count = 0;
 
-USER_INFO User_Info[10];
+typedef struct UserNode {
+    char username[CRED_LEN];
+    char pswd[CRED_LEN];
+    struct UserNode *next;
+} UserNode;
 
 
-int Welcome()
-{
-    int user_choice = 3;
-    int usrIndex = -1;
-    while(1)
-    {
-        printf("\nWelcome To 3 in 1 Game !!!!! \n");
-        printf("Options :- \n");
-        printf("1. Register \n");
-        printf("2. Login \n");
-        printf("3. Exit \n");
-
-        printf("Your Choice: ");
-
-        scanf("%d", &user_choice);
-
-        getchar();
-        switch (user_choice)
-        {
-        case 1:
-            rgstr();
-            break;
-        case 2:
-            usrIndex = login();
-            if(usrIndex >= 0)
-            {
-                printf("\nWelcome User %s \n", User_Info[usrIndex].username);
-                return usrIndex;
-            }
-            else
-            {
-                printf("Invalid Details \n");
-            }
-            break;
-        case 3:
-            return -1;
-            break;
-        default:
-            printf("Wrong Choice !!!!!\n");
-            break;
-        }
-
-        user_choice = 3;
-    }
-}
-
+UserNode *head = NULL;
 
 
 void remove_newline(char *str) {
@@ -73,7 +27,6 @@ void remove_newline(char *str) {
         str[len - 1] = '\0';
     }
 }
-
 
 
 int EnterCred(char *username, char *password)
@@ -123,39 +76,57 @@ int EnterCred(char *username, char *password)
 
 int rgstr()
 {
-    if(usr_count == max_usr) return -1;
+    char username[CRED_LEN];
+    char password[CRED_LEN];
 
     printf("Register User\n");
-    EnterCred(User_Info[usr_count].username, User_Info[usr_count].pswd );
+    EnterCred(username, password);
 
-    for (int i = 0; i < usr_count; i++) 
+    UserNode *current = head;
+
+    while(current != NULL) 
     {
-        if (strcmp(User_Info[usr_count].username, User_Info[i].username) == 0 ) 
+        if (strcmp(username, current->username) == 0 ) 
         {
                 printf("User name Already Exists \n");
                 return -1;
         }
+        current = current->next;
     }
 
-    
+    UserNode *new_user = (UserNode *) malloc(sizeof(UserNode));
+
+    strcpy(new_user->username, username);
+    strcpy(new_user->pswd, password);
+
+    new_user->next = head;
+    head = new_user;
+
     printf("\nRegisteration Succesful\n");
     usr_count++;
     return 0;
 }
 
+
 int login()
 {
-    char Username[30];
-    char Password[30];
+    char Username[CRED_LEN];
+    char Password[CRED_LEN];
 
     EnterCred(Username, Password);
 
-    for (int i = 0; i < usr_count; i++) 
+
+    int i = 0;
+    UserNode *current = head;
+
+    while(current != NULL) 
     {
-        if (strcmp(Username, User_Info[i].username) == 0 && strcmp(Password, User_Info[i].pswd) == 0) 
+        if (strcmp(Username, current->username) == 0 && strcmp(Password, current->pswd) == 0) 
         {
             return i;
         }
+        current = current->next;
+        i++;
     }
 
     return -1;
@@ -163,14 +134,77 @@ int login()
 }
 
 
+int Welcome()
+{
+    int user_choice = 3;
+    int usrIndex = -1;
+    while(1)
+    {
+        printf("\nWelcome To 3 in 1 Game !!!!! \n");
+        printf("Options :- \n");
+        printf("1. Register \n");
+        printf("2. Login \n");
+        printf("3. Exit \n");
+        printf("Your Choice: ");
+
+        scanf("%d", &user_choice);
+
+        getchar();
+        switch (user_choice)
+        {
+        case 1:
+            rgstr();
+            break;
+        case 2:
+            usrIndex = login();
+            if(usrIndex >= 0)
+            {
+                UserNode *current = head;
+
+                for(int i = 0; i < usrIndex && current != NULL; i++) {
+                    current = current->next;
+                }
+
+                if(current != NULL) {
+                    printf("Welcome User %s \n", current->username);
+                    return usrIndex;
+                }
+            }
+            else
+            {
+                printf("\nInvalid Details \n");
+            }
+            break;
+        case 3:
+            return -1;
+            break;
+        default:
+            printf("Wrong Choice !!!!!\n");
+            break;
+        }
+
+        user_choice = 4;
+    }
+}
+
+
+
 
 int main()
 {
     while(1)
     {
-        int a = Welcome();
-        if (a == -1) return 0;
-        printf("currently logged in %s \n1. log out \n2. Exit\n",User_Info[a].username);
+        int usrIndex = Welcome();
+        if (usrIndex == -1) return 0;
+        UserNode *current = head;
+
+        for(int i = 0; i < usrIndex && current != NULL; i++) {
+            current = current->next;
+        }
+        if(current != NULL) {
+            printf("currently logged in %s \n1. log out \n2. Exit\n",current->username);
+        }
+        
         int option = 2;
         scanf("%d",&option);
         getchar();
