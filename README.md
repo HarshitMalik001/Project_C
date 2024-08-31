@@ -23,3 +23,26 @@ First, compile the `Mylib.c` file into an object file and then create a static l
 ```sh
 gcc -c src/Mylib.c -o src/MylibExec
 ar rcs src/MylibExec.a src/MylibExec
+```
+### 2. Compile the Game
+Next, compile the main game file (game.c) and link it with the static library to create the final executable.
+
+```sh
+gcc main/game.c src/MylibExec.a -o main/mygame
+```
+
+### Running the Game
+
+```sh
+./main/mygame
+```
+
+## Features
+- User Registration
+- User Login
+- Simple terminal-based games
+
+
+## Future Work
+- Implement file handling to save and load user data.
+- Add more games to the collection.
