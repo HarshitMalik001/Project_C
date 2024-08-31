@@ -1,4 +1,21 @@
+#ifndef MYLIB_H
+#define MYLIB_H
 
-int Welcome();
-int login();
+#define CRED_LEN 40
+
+typedef struct UserNode {
+    char username[CRED_LEN];
+    char pswd[CRED_LEN];
+    struct UserNode *next;
+} UserNode;
+
+extern UserNode *head;
+extern int usr_count;
+
+void remove_newline(char *str);
+int EnterCred(char *username, char *password);
 int rgstr();
+int login();
+int Welcome();
+
+#endif
