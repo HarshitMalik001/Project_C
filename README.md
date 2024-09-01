@@ -41,8 +41,9 @@ gcc main/game.c src/MylibExec.a -o main/mygame
 - User Registration
 - User Login
 - Simple terminal-based games
+- file handling to save and load user data.
 
 
 ## Future Work
-- Implement file handling to save and load user data.
 - Add more games to the collection.
+ 

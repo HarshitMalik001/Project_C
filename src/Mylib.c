@@ -111,7 +111,7 @@ int login()
 
     UserNode Dummy;
     while(fread(&Dummy, sizeof(Dummy), 1, file)){
-        printf("\n%s %s\n",Dummy.username,Dummy.pswd);
+        // printf("\n%s %s\n",Dummy.username,Dummy.pswd);
         if(strcmp(Dummy.username, Username) == 0 && strcmp(Dummy.pswd, Password) == 0){
             printf("Successfully Logged in as %s \n",Username);
             fclose(file);
@@ -140,9 +140,16 @@ int Welcome()
         printf("3. Exit \n");
         printf("Your Choice: ");
 
-        scanf("%d", &user_choice);
+        if(scanf("%d", &user_choice) != 1)
+        {
+            while(getchar() != '\n');
+            printf("Please Keep the Input In Between 1 - 3 \n");
+            user_choice = 4;
+        }
+        else{
+            while(getchar() != '\n');
+        }
 
-        getchar();
         switch (user_choice)
         {
         case 1:
