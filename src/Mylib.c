@@ -7,7 +7,7 @@
 
 
 int usr_count = 0;
-UserNode *head = NULL;
+const char* ACCOUNT_FILE = "account.dat";
 
 
 
@@ -72,28 +72,24 @@ int rgstr()
     char username[CRED_LEN];
     char password[CRED_LEN];
 
+    UserNode new_user;
+    FILE *file = fopen(ACCOUNT_FILE, "ab+");
+    if (file == NULL) {
+        printf("\nUnable to open file!!");
+        return -1;
+    }
+
+
     printf("Register User\n");
     EnterCred(username, password);
 
-    UserNode *current = head;
+    
 
-    while(current != NULL) 
-    {
-        if (strcmp(username, current->username) == 0 ) 
-        {
-                printf("User name Already Exists \n");
-                return -1;
-        }
-        current = current->next;
-    }
+    strcpy(new_user.username, username);
+    strcpy(new_user.pswd, password);
 
-    UserNode *new_user = (UserNode *) malloc(sizeof(UserNode));
-
-    strcpy(new_user->username, username);
-    strcpy(new_user->pswd, password);
-
-    new_user->next = head;
-    head = new_user;
+    fwrite(&new_user, sizeof(new_user), 1, file);
+    fclose(file);
 
     printf("\nRegisteration Succesful\n");
     usr_count++;
@@ -103,25 +99,27 @@ int rgstr()
 
 int login()
 {
+    FILE *file = fopen(ACCOUNT_FILE, "rb+");
+    if (file == NULL) {
+        printf("Unable to open account file!!");
+        return -1;
+    }
     char Username[CRED_LEN];
     char Password[CRED_LEN];
 
     EnterCred(Username, Password);
 
-
-    int i = 0;
-    UserNode *current = head;
-
-    while(current != NULL) 
-    {
-        if (strcmp(Username, current->username) == 0 && strcmp(Password, current->pswd) == 0) 
-        {
-            return i;
+    UserNode Dummy;
+    while(fread(&Dummy, sizeof(Dummy), 1, file)){
+        printf("\n%s %s\n",Dummy.username,Dummy.pswd);
+        if(strcmp(Dummy.username, Username) == 0 && strcmp(Dummy.pswd, Password) == 0){
+            printf("Successfully Logged in as %s \n",Username);
+            fclose(file);
+            return 1;
         }
-        current = current->next;
-        i++;
     }
 
+    fclose(file);
     return -1;
 
 }
@@ -152,18 +150,8 @@ int Welcome()
             break;
         case 2:
             usrIndex = login();
-            if(usrIndex >= 0)
-            {
-                UserNode *current = head;
-
-                for(int i = 0; i < usrIndex && current != NULL; i++) {
-                    current = current->next;
-                }
-
-                if(current != NULL) {
-                    printf("Welcome User %s \n", current->username);
-                    return usrIndex;
-                }
+            if(usrIndex >= 0){
+                return usrIndex;
             }
             else
             {

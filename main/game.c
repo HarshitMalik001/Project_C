@@ -3,24 +3,46 @@
 
 int main()
 {
+    int islogged = 0;
+    int usrIndex = Welcome();
+    if (usrIndex == -1) return 0;
+    islogged = 1;
+
     while(1)
     {
-        int usrIndex = Welcome();
-        if (usrIndex == -1) return 0;
-        UserNode *current = head;
+        if(!islogged){
+            usrIndex = Welcome();
+            if (usrIndex == -1) return 0;
+            islogged = 1;
+        }
 
-        for(int i = 0; i < usrIndex && current != NULL; i++) {
-            current = current->next;
-        }
-        if(current != NULL) {
-            printf("currently logged in %s \n1. log out \n2. Exit\n",current->username);
-        }
-        
+        printf("\nWelcome To 3 in 1 Game !!!!! \n");
+        printf("Options :- \n");
+        printf("1. Tic-Tac-Toe \n");
+        printf("2. Logout \n");
+        printf("3. Exit \n");
+        printf("Your Choice: ");
+
         int option = 2;
+
         scanf("%d",&option);
         getchar();
 
-        if(option == 2) return 0;
+        switch(option){
+            case 1:
+                printf("\nIn Progress \n");
+                break;
+            case 2:
+                islogged = 0;
+                continue;
+                break;
+            case 3:
+                return 0;
+                break;
+            default:
+                printf("\nWrong Choice !!!!!");
+                break;
+        }
     }
     return 0;
 }

@@ -6,7 +6,6 @@
 typedef struct UserNode {
     char username[CRED_LEN];
     char pswd[CRED_LEN];
-    struct UserNode *next;
 } UserNode;
 
 extern UserNode *head;
