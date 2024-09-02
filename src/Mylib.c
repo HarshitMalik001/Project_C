@@ -5,28 +5,31 @@
 #include <termios.h>
 #include <unistd.h>
 
-
-int usr_count = 0;
+// Defining the filename where to save our user information
 const char* ACCOUNT_FILE = "account.dat";
 
 
+// When we take Input using fgets we get input like this "SomeString\n" 
+// because we press enter(\n) we need to define a remove_newline function to remove '\n'
 
 void remove_newline(char *str) {
-    size_t len = strlen(str);
+    /* Can use unsigned int to store the size of str but I saw on many website that size_t is prefered over unsigned int */
+
+    size_t len = strlen(str);  
     if (len > 0 && str[len - 1] == '\n') {
         str[len - 1] = '\0';
     }
 }
 
 
-
+// EnterCred function to enter Credentials used in both rgstr and login 
 int EnterCred(char *username, char *password)
 {
     printf("\nEnter User Name : ");
     fgets(username, CRED_LEN, stdin);
     remove_newline(username);
     printf("Enter Password : ");
-    fflush(stdout);
+    fflush(stdout);  // All the pending output flush 
 
     // terminal
     struct termios old_one, new_one;
@@ -92,7 +95,6 @@ int rgstr()
     fclose(file);
 
     printf("\nRegisteration Succesful\n");
-    usr_count++;
     return 0;
 }
 

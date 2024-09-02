@@ -28,7 +28,7 @@ ar rcs src/MylibExec.a src/MylibExec
 Next, compile the main game file (game.c) and link it with the static library to create the final executable.
 
 ```sh
-gcc main/game.c src/MylibExec.a -o main/mygame
+gcc main/game.c -L. src/MylibExec.a -o main/mygame
 ```
 
 ### Running the Game

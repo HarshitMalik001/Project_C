@@ -1,16 +1,97 @@
 #include <stdio.h>
 #include "../include/Mylib.h"
 
+
+int ClearScreen()
+{
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}
+
+void printBoard(char Board[3][3])
+{
+    printf("\n\n");
+    for(int i = 0; i < 3; i++)
+    {
+        for(int j = 0; j < 3; j++)
+        {
+            printf(" %c ",Board[i][j]);
+            if(j != 2)
+            {
+                printf("|");
+            }
+        }
+        if(i != 2)
+        {
+            printf("\n---+---+---\n");
+        }
+    }
+    printf("\n\n");
+}
+
+int checkWin(char Board[3][3], char curPlayer)
+{
+    for(int i = 0; i < 3; i++)
+    {        
+        if(Board[i][0]==curPlayer && Board[i][1]==curPlayer && Board[i][2]==curPlayer) return 1;
+        if(Board[0][i]==curPlayer && Board[1][i]==curPlayer && Board[2][i]==curPlayer) return 1;
+    }
+    if(Board[0][0]==curPlayer && Board[1][1]==curPlayer && Board[2][2]==curPlayer) return 1;
+    if(Board[2][0]==curPlayer && Board[1][1]==curPlayer && Board[0][2]==curPlayer) return 1;
+
+    return  0;
+}
+
+int checkDraw(char Board[3][3])
+{
+    for(int i = 0; i < 3; i++)
+    {
+        for(int j = 0; j < 3; j++)
+        {
+            if(Board[i][j] == ' ') return 0;
+        }
+    }
+
+    return 1;
+}
+
+
 int TicTacPlay()
 {
-    printf("InProgress TicktackPlay\n");
+    while(1){
+        char Board[3][3] = {
+            {' ', ' ', ' '},
+            {' ', ' ', ' '},
+            {' ', ' ', ' '}
+        };
+        
+        for(int i = 0; i < 3; i++)
+        {
+        for(int j = 0; j < 3; j++)
+            {
+                printf("%d %d : ",i,j);
+                scanf(" %c", &Board[i][j]);
+            }
+        }
+        printBoard(Board);
+        int test = 0;
+        printf("Stop test :");
+        scanf("%d",&test);
+        if(test) break;
+        ClearScreen();
+    }
 }
 
 
 int TicTacMenu()
 {
+
     while(1)
     {
+        printf("\n   Tic-Tac-Toe   \n");
         printf("1. Start New Game\n");
         printf("2. LOAD Game \n");
         printf("3. Go back\n");
@@ -50,7 +131,6 @@ int TicTacMenu()
 
 int main()
 {
-    printf("changes are reflected");
     int islogged = 0;
     int usrIndex = Welcome();
     if (usrIndex == -1) return 0;
