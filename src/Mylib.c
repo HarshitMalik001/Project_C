@@ -21,11 +21,10 @@ void remove_newline(char *str) {
     }
 }
 
-
 // EnterCred function to enter Credentials used in both rgstr and login 
 int EnterCred(char *username, char *password)
 {
-    printf("\nEnter User Name : ");
+    printf("Enter User Name : ");
     fgets(username, CRED_LEN, stdin);
     remove_newline(username);
     printf("Enter Password : ");
@@ -63,6 +62,8 @@ int EnterCred(char *username, char *password)
 
     tcsetattr(STDIN_FILENO, TCSANOW, &old_one);
 
+    ClearScreen();
+
     printf("\n");
     return 0;
 }
@@ -94,7 +95,7 @@ int rgstr()
     fwrite(&new_user, sizeof(new_user), 1, file);
     fclose(file);
 
-    printf("\nRegisteration Succesful\n");
+    printf("Registeration Succesful !!!!!!\n");
     return 0;
 }
 
@@ -142,15 +143,21 @@ int Welcome()
         printf("3. Exit \n");
         printf("Your Choice: ");
 
+        
+
         if(scanf("%d", &user_choice) != 1)
         {
             while(getchar() != '\n');
+            ClearScreen();
             printf("Please Keep the Input In Between 1 - 3 \n");
             user_choice = 4;
         }
         else{
             while(getchar() != '\n');
+            ClearScreen();
         }
+
+        
 
         switch (user_choice)
         {
@@ -164,7 +171,7 @@ int Welcome()
             }
             else
             {
-                printf("\nInvalid Details \n");
+                printf("Invalid Details \n");
             }
             break;
         case 3:
@@ -179,3 +186,13 @@ int Welcome()
     }
 }
 
+
+// To Clear the screen after each operation
+int ClearScreen()
+{
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}

@@ -2,15 +2,6 @@
 #include "../include/Mylib.h"
 
 
-int ClearScreen()
-{
-    #ifdef _WIN32
-        system("cls");
-    #else
-        system("clear");
-    #endif
-}
-
 void printBoard(char Board[3][3])
 {
     printf("\n\n");
@@ -68,19 +59,7 @@ int TicTacPlay()
             {' ', ' ', ' '}
         };
         
-        for(int i = 0; i < 3; i++)
-        {
-        for(int j = 0; j < 3; j++)
-            {
-                printf("%d %d : ",i,j);
-                scanf(" %c", &Board[i][j]);
-            }
-        }
         printBoard(Board);
-        int test = 0;
-        printf("Stop test :");
-        scanf("%d",&test);
-        if(test) break;
         ClearScreen();
     }
 }
@@ -153,15 +132,19 @@ int main()
 
         int option = 2;
 
-        
+
         if(scanf("%d",&option) != 1)
         {
             while(getchar() != '\n');
+            ClearScreen();
             printf("Please Keep the Input In Between 1 - 3 \n");
             option = 4;
         }
-        else{
+
+        else
+        {
             while(getchar() != '\n');
+            ClearScreen();
         }
 
         switch(option){

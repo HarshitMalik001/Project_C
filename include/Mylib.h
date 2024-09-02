@@ -16,5 +16,6 @@ int EnterCred(char *username, char *password);
 int rgstr();
 int login();
 int Welcome();
+int ClearScreen();
 
 #endif
