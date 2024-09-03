@@ -1,9 +1,6 @@
 #include "../include/Mylib.h"
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <termios.h>
-#include <unistd.h>
+
 
 // Defining the filename where to save our user information
 const char* ACCOUNT_FILE = "account.dat";
@@ -30,7 +27,7 @@ int EnterCred(char *username, char *password)
     printf("Enter Password : ");
     fflush(stdout);  // All the pending output flush 
 
-    // terminal
+    // Changing Terminal setting so that the password is hidden when we type
     struct termios old_one, new_one;
     tcgetattr(STDIN_FILENO, &old_one);
     new_one = old_one;
@@ -57,40 +54,49 @@ int EnterCred(char *username, char *password)
             printf("*");
         }
     }
-
     password[cur] = '\0';
-
     tcsetattr(STDIN_FILENO, TCSANOW, &old_one);
-
     ClearScreen();
-
-    printf("\n");
     return 0;
 }
-
-
-
 
 int rgstr()
 {
     char username[CRED_LEN];
     char password[CRED_LEN];
 
-    UserNode new_user;
     FILE *file = fopen(ACCOUNT_FILE, "ab+");
+    
     if (file == NULL) {
         printf("\nUnable to open file!!");
         return -1;
     }
-
+    
+    fseek(file, 0 , SEEK_SET);
 
     printf("Register User\n");
     EnterCred(username, password);
 
+    UserNode Dummy;
+    while(fread(&Dummy, sizeof(Dummy), 1, file))
+    {
+        if(strcmp(Dummy.username,username) == 0)
+        {
+            printf("UserName Already Taken !!!!\n");
+            fclose(file);
+            return 0;
+        }
+    }
     
+    UserNode new_user;
 
     strcpy(new_user.username, username);
     strcpy(new_user.pswd, password);
+
+    new_user.Tiktak.player = 0; 
+    new_user.Tiktak.computer = 0; 
+    new_user.Tiktak.draw = 0;
+
 
     fwrite(&new_user, sizeof(new_user), 1, file);
     fclose(file);
@@ -100,13 +106,14 @@ int rgstr()
 }
 
 
-int login()
+int login(UserNode *User)
 {
     FILE *file = fopen(ACCOUNT_FILE, "rb+");
     if (file == NULL) {
         printf("Unable to open account file!!");
         return -1;
     }
+
     char Username[CRED_LEN];
     char Password[CRED_LEN];
 
@@ -116,12 +123,19 @@ int login()
     while(fread(&Dummy, sizeof(Dummy), 1, file)){
         // printf("\n%s %s\n",Dummy.username,Dummy.pswd);
         if(strcmp(Dummy.username, Username) == 0 && strcmp(Dummy.pswd, Password) == 0){
+
+            strcpy(User->username, Dummy.username);
+            strcpy(User->pswd, Dummy.pswd);
+            User->Tiktak.computer = Dummy.Tiktak.computer;
+            User->Tiktak.draw = Dummy.Tiktak.draw;
+            User->Tiktak.player = Dummy.Tiktak.player;
+            
             printf("Successfully Logged in as %s \n",Username);
             fclose(file);
             return 1;
         }
     }
-
+    
     fclose(file);
     return -1;
 
@@ -130,7 +144,7 @@ int login()
 
 
 
-int Welcome()
+int Welcome(UserNode *User)
 {
     int user_choice = 3;
     int usrIndex = -1;
@@ -157,15 +171,13 @@ int Welcome()
             ClearScreen();
         }
 
-        
-
         switch (user_choice)
         {
         case 1:
             rgstr();
             break;
         case 2:
-            usrIndex = login();
+            usrIndex = login(User);
             if(usrIndex >= 0){
                 return usrIndex;
             }

@@ -1,20 +1,14 @@
-#include <stdio.h>
 #include "../include/Mylib.h"
-#include <time.h>
-#include <stdlib.h>
+#include <stdio.h>
 
-typedef struct {
-  int player;
-  int computer;
-  int draw;
-} Score;
-Score score = {.player = 0, .computer = 0, .draw = 0};
+UserNode CurrentUser;
+const char* ACCOUNT_FILE1 = "account.dat";
 
 void printBoard(char Board[3][3])
 {
     ClearScreen();
     printf("Your History : \n");
-    printf("Player Won %d, Computer Won %d, Draw %d\n",score.player,score.computer,score.draw);
+    printf("Player Won %d, Computer Won %d, Draw %d\n",CurrentUser.Tiktak.player, CurrentUser.Tiktak.computer, CurrentUser.Tiktak.draw);
     printf("\n\n");
     for(int i = 0; i < 3; i++)
     {
@@ -43,7 +37,6 @@ int checkWin(char Board[3][3], char curPlayer)
     }
     if(Board[0][0]==curPlayer && Board[1][1]==curPlayer && Board[2][2]==curPlayer) return 1;
     if(Board[2][0]==curPlayer && Board[1][1]==curPlayer && Board[0][2]==curPlayer) return 1;
-
     return  0;
 }
 
@@ -56,7 +49,6 @@ int checkDraw(char Board[3][3])
             if(Board[i][j] == ' ') return 0;
         }
     }
-
     return 1;
 }
 
@@ -69,17 +61,25 @@ int isValid(char Board[3][3], int row, int col)
 void PlayerTurn(char Board[3][3], char curPlayer)
 {
     int row,col;
-    int bool1;
-    int bool2;
     do {
         printf("Player %c Turn\n",curPlayer);
-        bool1 = scanf("%d",&row);
-        bool2 = scanf("%d",&col);
+
+        if(scanf("%d",&row) != 1)
+        {
+            while (getchar() != '\n');
+            printf("Please Keep the Input In Between 1 - 3 \n");
+            continue;
+        }
+         if(scanf("%d",&col) != 1)
+        {
+            while (getchar() != '\n');
+            printf("Please Keep the Input In Between 1 - 3 \n");
+            continue;
+        }
     }
     while(!isValid(Board, row , col));
-    printf("%d %d \n",row, col);
-    Board[row - 1][col - 1] = curPlayer;
 
+    Board[row - 1][col - 1] = curPlayer;
 }
 
 
@@ -102,13 +102,13 @@ int TicTacPlay()
         if(checkWin(Board,cur_player)){
             printBoard(Board);
             printf("Congratulation player %c Won !!\n",cur_player);
-            cur_player == 'O' ? score.player++ : score.computer++; 
+            cur_player == 'O' ? CurrentUser.Tiktak.player++ : CurrentUser.Tiktak.computer++; 
             break;
         }
         else if(checkDraw(Board)){
             printBoard(Board);
             printf("It's a Draw !!!\n");
-            score.draw++;
+            CurrentUser.Tiktak.draw++;
             break;
         }
         cur_player = cur_player == 'O'? 'X' : 'O';
@@ -123,7 +123,6 @@ int TicTacPlay()
 
 int TicTacMenu()
 {
-
     while(1)
     {
         printf(" Welcome To Tic-Tac-Toe !!!! \n");
@@ -160,7 +159,30 @@ int TicTacMenu()
             break;
         }
     }
+    return 0;
+}
 
+int SaveCurrentUser()
+{
+    FILE *file = fopen(ACCOUNT_FILE1, "rb+");
+    if (file == NULL) {
+        printf("Unable to open account file!!");
+        return -1;
+    }
+
+    UserNode Dummy;
+    while(fread(&Dummy, sizeof(Dummy), 1, file))
+    {
+        if(strcmp(Dummy.username,CurrentUser.username) == 0)
+        {
+            fseek(file, -sizeof(Dummy), SEEK_CUR);
+            fwrite(&CurrentUser, sizeof(CurrentUser), 1, file);
+            fclose(file);
+            return 0;
+        }
+    }
+    printf("User Not Found\n");
+    fclose(file);
     return 0;
 }
 
@@ -168,18 +190,19 @@ int main()
 {
     ClearScreen();
     int islogged = 0;
-    int usrIndex = Welcome();
+    int usrIndex = Welcome(&CurrentUser);
     if (usrIndex == -1) return 0;
     islogged = 1;
 
     while(1)
     {
         if(!islogged){
-            usrIndex = Welcome();
+            usrIndex = Welcome(&CurrentUser);
             if (usrIndex == -1) return 0;
             islogged = 1;
         }
 
+        printf("Currently Logged in as %s\n" , CurrentUser.username);
         printf("\nWelcome To 3 in 1 Game !!!!! \n");
         printf("Options :- \n");
         printf("1. Tic-Tac-Toe \n");
@@ -189,7 +212,6 @@ int main()
 
         int option = 2;
 
-
         if(scanf("%d",&option) != 1)
         {
             while(getchar() != '\n');
@@ -197,7 +219,6 @@ int main()
             printf("Please Keep the Input In Between 1 - 3 \n");
             option = 4;
         }
-
         else
         {
             while(getchar() != '\n');
@@ -210,9 +231,11 @@ int main()
                 break;
             case 2:
                 islogged = 0;
+                SaveCurrentUser();
                 continue;
                 break;
             case 3:
+                SaveCurrentUser();
                 return 0;
                 break;
             default:
@@ -220,7 +243,7 @@ int main()
                 break;
         }
     }
+
     return 0;
 }
-
 
