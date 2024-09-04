@@ -6,14 +6,12 @@ UserNode CurrentUser;
 
 // When we take Input using fgets we get input like this "SomeString\n" 
 // because we press enter(\n) we need to define a remove_newline function to remove '\n'
-
 void remove_newline(char *str) {
     size_t len = strlen(str);  
     if (len > 0 && str[len - 1] == '\n') {
         str[len - 1] = '\0';
     }
 }
-
 
 void get_password(char *password) {
     int cur = 0;
@@ -114,6 +112,15 @@ int rgstr()
     new_user.Tiktak.computer = 0; 
     new_user.Tiktak.draw = 0;
 
+    new_user.Tiktak.turn = ' ';
+    for(int i = 0; i < 3; i++)
+    {
+        for(int j = 0; j < 3; j++)
+        {
+            new_user.Tiktak.Board[i][j] = ' ';
+        }
+    }
+    
 
     fwrite(&new_user, sizeof(new_user), 1, file);
     fclose(file);
@@ -134,19 +141,28 @@ int login()
 
     char Username[CRED_LEN];
     char Password[CRED_LEN];
-
+    printf("Login Using Your Credential\n");
     EnterCred(Username, Password);
 
     UserNode Dummy;
     while(fread(&Dummy, sizeof(Dummy), 1, file)){
         // printf("\n%s %s\n",Dummy.username,Dummy.pswd);
-        if(strcmp(Dummy.username, Username) == 0 && strcmp(Dummy.pswd, Password) == 0){
-
+        if(strcmp(Dummy.username, Username) == 0 && strcmp(Dummy.pswd, Password) == 0)
+        {
             strcpy(CurrentUser.username, Dummy.username);
             strcpy(CurrentUser.pswd, Dummy.pswd);
             CurrentUser.Tiktak.computer = Dummy.Tiktak.computer;
             CurrentUser.Tiktak.draw = Dummy.Tiktak.draw;
             CurrentUser.Tiktak.player = Dummy.Tiktak.player;
+
+            CurrentUser.Tiktak.turn = Dummy.Tiktak.turn;
+            for(int i = 0; i < 3; i++)
+            {
+                for(int j = 0; j < 3; j++)
+                {
+                    CurrentUser.Tiktak.Board[i][j] = Dummy.Tiktak.Board[i][j];
+                }
+            }
 
             printf("Successfully Logged in as %s \n",Username);
             fclose(file);
@@ -158,7 +174,9 @@ int login()
     return -1;
 
 }
-
+// stop
+//stop
+//stop
 int Welcome()
 {
     int user_choice = 3;
@@ -171,8 +189,6 @@ int Welcome()
         printf("2. Login \n");
         printf("3. Exit \n");
         printf("Your Choice: ");
-
-        
 
         if(scanf("%d", &user_choice) != 1)
         {
@@ -211,7 +227,6 @@ int Welcome()
         user_choice = 4;
     }
 }
-
 
 // To Clear the screen after each operation
 int ClearScreen()

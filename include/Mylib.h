@@ -7,9 +7,9 @@
 #include <unistd.h>
 
 #ifdef _WIN32
-#include <conio.h>
+    #include <conio.h>
 #else
-#include <termios.h>
+    #include <termios.h>
 #endif
 
 // Defining the filename where to save our user information
@@ -17,16 +17,18 @@
 
 #define CRED_LEN 40
 
-typedef struct {
-  int player;
-  int computer;
-  int draw;
-} Score;
+// typedef 
 
 typedef struct UserNode {
     char username[CRED_LEN];
     char pswd[CRED_LEN];
-    Score Tiktak;
+    struct {
+        int player;
+        int computer;
+        int draw;
+        char turn;
+        char Board[3][3];
+    } Tiktak;
 } UserNode;
 
 // User

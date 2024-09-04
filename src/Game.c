@@ -30,7 +30,6 @@ void printBoard(char Board[3][3])
     printf("\n\n");
 }
 
-
 int checkWin(char Board[3][3], char curPlayer)
 {
     for(int i = 0; i < 3; i++)
@@ -89,34 +88,32 @@ void PlayerTurn(char Board[3][3], char curPlayer)
 
 int TicTacPlay()
 {
-    char Board[3][3] = {
-        {' ', ' ', ' '},
-        {' ', ' ', ' '},
-        {' ', ' ', ' '}
-    };
-    
+    char cur_player;
     srand(time(NULL));
-    char cur_player = rand() % 2 == 0 ? 'O' : 'X';
+    if(CurrentUser.Tiktak.turn == ' ') cur_player = rand() % 2 == 0 ? 'O' : 'X';
+    else cur_player = CurrentUser.Tiktak.turn;
 
-    printBoard(Board);
+    printBoard(CurrentUser.Tiktak.Board);
 
     while(1){
-        PlayerTurn(Board, cur_player);
-        printBoard(Board);
-        if(checkWin(Board,cur_player)){
-            printBoard(Board);
-            printf("Congratulation player %c Won !!\n",cur_player);
+        PlayerTurn(CurrentUser.Tiktak.Board, cur_player);
+        printBoard(CurrentUser.Tiktak.Board);
+        if(checkWin(CurrentUser.Tiktak.Board,cur_player)){
             cur_player == 'O' ? CurrentUser.Tiktak.player++ : CurrentUser.Tiktak.computer++; 
+            printBoard(CurrentUser.Tiktak.Board);
+            printf("Congratulation player %c Won !!\n",cur_player);
             break;
         }
-        else if(checkDraw(Board)){
-            printBoard(Board);
-            printf("It's a Draw !!!\n");
+        else if(checkDraw(CurrentUser.Tiktak.Board)){
             CurrentUser.Tiktak.draw++;
+            printBoard(CurrentUser.Tiktak.Board);
+            printf("It's a Draw !!!\n");
             break;
         }
         cur_player = cur_player == 'O'? 'X' : 'O';
+        CurrentUser.Tiktak.turn = cur_player; 
     }
+
     printf("Enter 1 if You Want To Play Again : ");
     int playAgain;
     scanf("%d",&playAgain);
@@ -163,15 +160,12 @@ int leaderBoard()
     }
 
     fseek(file , 0, SEEK_SET);
-
     fread(listOfUsers, sizeof(UserNode), noOfUser, file);
-
     qsort(listOfUsers, noOfUser, sizeof(UserNode), compareUsers);
 
     printf("Leaderboard\n");
     printf("Position | Player Wins | Computer Wins | Draws | Username\n");
-    printf("--------------------------------------------\n");
-
+    printf("---------------------------------------------------------\n");
     for (int i = 0; i < noOfUser; i++) {
         printf("%8d | %11d | %13d | %5d | %s",i + 1, listOfUsers[i].Tiktak.player, listOfUsers[i].Tiktak.computer, listOfUsers[i].Tiktak.draw, listOfUsers[i].username);
         if (strcmp(listOfUsers[i].username, CurrentUser.username) == 0) {
@@ -213,10 +207,20 @@ int TicTacMenu()
         switch (options)
         {
         case 1:
+
+            for(int i = 0; i < 3; i++)
+            {
+                for(int j = 0; j < 3; j++)
+                {
+                    CurrentUser.Tiktak.Board[i][j] = ' ';
+                }
+            } 
+            CurrentUser.Tiktak.turn = ' ';
             while(TicTacPlay() == 1);
             break;
         case 2:
-            printf("In Progress\n");
+            // printf("In Progress\n");
+            while(TicTacPlay() == 1);
             break;
         case 3:
             leaderBoard();
@@ -244,7 +248,7 @@ int SaveCurrentUser()
     UserNode Dummy;
     while(fread(&Dummy, sizeof(Dummy), 1, file))
     {
-        if(strcmp(Dummy.username,CurrentUser.username) == 0)
+        if(strcmp(Dummy.username, CurrentUser.username) == 0)
         {
             fseek(file, -sizeof(Dummy), SEEK_CUR);
             fwrite(&CurrentUser, sizeof(CurrentUser), 1, file);
@@ -252,6 +256,7 @@ int SaveCurrentUser()
             return 0;
         }
     }
+
     printf("User Not Found\n");
     fclose(file);
     return 0;
