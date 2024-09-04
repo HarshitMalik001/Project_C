@@ -12,6 +12,8 @@
 #include <termios.h>
 #endif
 
+// Defining the filename where to save our user information
+#define ACCOUNT_FILE  "account.dat"
 
 #define CRED_LEN 40
 

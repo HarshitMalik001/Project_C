@@ -21,14 +21,15 @@ This project is a simple terminal-based game collection with user registration a
 ### 1. Compile the Library
 First, compile the `Mylib.c` file into an object file and then create a static library from it.
 ```sh
-gcc -c src/Mylib.c -o src/MylibExec
-ar rcs src/MylibExec.a src/MylibExec
+gcc -c src/Mylib.c -o src/MylibExec.o
+gcc -c src/Game.c -o src/GameExec.o
+ar rcs libMylib.a src/MylibExec.o src/GameExec.o
 ```
 ### 2. Compile the Game
 Next, compile the main game file (game.c) and link it with the static library to create the final executable.
 
 ```sh
-gcc main/game.c -L. src/MylibExec.a -o main/mygame
+gcc main/game.c -L. libMylib.a -o main/mygame
 ```
 
 ### Running the Game
