@@ -46,4 +46,7 @@ gcc main/game.c -L. src/MylibExec.a -o main/mygame
 
 ## Future Work
 - Add more games to the collection.
+
+## Flow Of the Code
+![How The Code Is Working](https://github.com/user-attachments/assets/fa7f74d0-2d80-4edf-9866-dd3f08c20a93)
  
