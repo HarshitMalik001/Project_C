@@ -125,6 +125,19 @@ int TicTacPlay()
     return 0;
 }
 
+int compareUsers(const void *a, const void *b) {
+    UserNode *userA = (UserNode *)a;
+    UserNode *userB = (UserNode *)b;
+
+    if (userB->Tiktak.player != userA->Tiktak.player)
+        return userB->Tiktak.player - userA->Tiktak.player;
+
+    if (userB->Tiktak.computer != userA->Tiktak.computer)
+        return  userA->Tiktak.computer - userB->Tiktak.computer;
+
+    return userB->Tiktak.draw - userA->Tiktak.draw;
+}
+
 
 int leaderBoard()
 {
@@ -134,18 +147,40 @@ int leaderBoard()
         printf("Unable to open account file!!");
         return -1;
     }
-    printf("List of All Players \n");
-    printf("Win Lose Draw UserName\n");
-    UserNode Dummy;
-    while(fread(&Dummy, sizeof(Dummy), 1, file))
+
+    fseek(file, 0 , SEEK_END);
+
+    long filesize = ftell(file);
+    int noOfUser = filesize / sizeof(UserNode);
+     
+    UserNode *listOfUsers = (UserNode *) malloc(sizeof(UserNode) * noOfUser);
+
+    if(listOfUsers == NULL)
     {
-        printf(" %d   %d    %d    %s",Dummy.Tiktak.player, Dummy.Tiktak.computer, Dummy.Tiktak.draw, Dummy.username);
-        if(strcmp(Dummy.username,CurrentUser.username) == 0)
-        {
+        printf("Error in Memory Allocating\n");
+        fclose(file);
+        return -1;
+    }
+
+    fseek(file , 0, SEEK_SET);
+
+    fread(listOfUsers, sizeof(UserNode), noOfUser, file);
+
+    qsort(listOfUsers, noOfUser, sizeof(UserNode), compareUsers);
+
+    printf("Leaderboard\n");
+    printf("Position | Player Wins | Computer Wins | Draws | Username\n");
+    printf("--------------------------------------------\n");
+
+    for (int i = 0; i < noOfUser; i++) {
+        printf("%8d | %11d | %13d | %5d | %s",i + 1, listOfUsers[i].Tiktak.player, listOfUsers[i].Tiktak.computer, listOfUsers[i].Tiktak.draw, listOfUsers[i].username);
+        if (strcmp(listOfUsers[i].username, CurrentUser.username) == 0) {
             printf(" <--- You are here");
         }
         printf("\n");
     }
+
+    free(listOfUsers);
     fclose(file);
     printf("\n");
     return 0;
