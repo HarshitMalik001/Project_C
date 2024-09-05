@@ -5,7 +5,6 @@
 
 extern UserNode CurrentUser;
 
-
 void printBoard(char Board[3][3])
 {
     ClearScreen();
@@ -64,6 +63,13 @@ int isValid(char Board[3][3], int row, int col)
 
 void PlayerTurn(char Board[3][3], char curPlayer)
 {
+    if (curPlayer == 'X')
+    {
+        printf("Computer's Turn\n");
+        ComputerTurn(Board, curPlayer);
+        return;
+    }
+    
     int row,col;
     do {
         printf("Player %c Turn\n",curPlayer);
@@ -84,6 +90,111 @@ void PlayerTurn(char Board[3][3], char curPlayer)
     while(!isValid(Board, row , col));
 
     Board[row - 1][col - 1] = curPlayer;
+}
+
+void ComputerTurn(char Board[3][3], char curPlayer)
+{
+
+    printf("Computer is Thinking");
+    fflush(stdout);
+
+    for(int i = 1; i < 20; i++)
+    {
+        usleep(100000);
+        printf(".");
+        fflush(stdout);
+        
+        if(i%3 == 0){
+            usleep(100000);
+            printf("\b\b\b   \b\b\b");
+            fflush(stdout);
+        }
+    }
+    printf("!\n");
+    fflush(stdout);
+
+    // check if computer can win in next move
+    for(int i = 0; i < 3; i++)
+    {
+        for(int j = 0; j < 3; j++)
+        {
+            if(Board[i][j] == ' '){
+                Board[i][j] = curPlayer;
+                if( checkWin(Board, curPlayer) ) return;
+                Board[i][j] = ' ';
+            }
+        }
+    }
+
+    // check if computer can lose in next move so computer can block
+    for(int i = 0; i < 3; i++)
+    {
+        for(int j = 0; j < 3; j++)
+        {
+            if(Board[i][j] == ' '){
+                char ff = curPlayer == 'X' ? 'O' :'X';
+                Board[i][j] = ff;
+                if( checkWin(Board, ff) ){
+                    Board[i][j] = curPlayer;
+                    return;
+                }
+                Board[i][j] = ' ';
+            }
+            
+        }
+    }
+
+
+    // 
+    srand(time(NULL));
+
+    // To lower the diffuclty we made it so computer always Does'nt Play the best move
+
+    if(rand() % 2 == 0){
+        // Random Move by computer
+        int countEmpty = 0;
+        
+        for(int i = 0; i < 3; i++)
+        {
+            for(int j = 0; j < 3; j++)
+            {
+                if(Board[i][j] == ' ') countEmpty++;
+            }
+        }
+
+        int randMove = rand() % countEmpty;
+
+        for(int i = 0; i < 3; i++)
+        {
+            for(int j = 0; j < 3; j++)
+            {
+                if(Board[i][j] == ' ')
+                {
+                    if(randMove == 0)
+                    {
+                        Board[i][j] = curPlayer;
+                        return;
+                    }
+                    randMove--;
+                }
+            }
+        }
+    }
+    else{
+        // Best Possible move by computer
+        if(Board[1][1] == ' ') Board[1][1] = curPlayer;
+        else if(Board[0][0] == ' ') Board[0][0] = curPlayer;
+        else if(Board[0][2] == ' ') Board[0][2] = curPlayer;
+        else if(Board[2][0] == ' ') Board[2][0] = curPlayer;
+        else if(Board[2][2] == ' ') Board[2][2] = curPlayer;
+        else if(Board[0][1] == ' ') Board[0][1] = curPlayer;
+        else if(Board[1][0] == ' ') Board[1][0] = curPlayer;
+        else if(Board[1][2] == ' ') Board[1][2] = curPlayer;
+        else if(Board[2][1] == ' ') Board[2][1] = curPlayer;
+        return;
+    }
+
+    return;
 }
 
 int TicTacPlay()
@@ -181,6 +292,18 @@ int leaderBoard()
 }
 
 
+void clearBoard()
+{
+    for(int i = 0; i < 3; i++)
+    {
+        for(int j = 0; j < 3; j++)
+        {
+            CurrentUser.Tiktak.Board[i][j] = ' ';
+        }
+    } 
+    CurrentUser.Tiktak.turn = ' ';
+}
+
 int TicTacMenu()
 {
     while(1)
@@ -207,20 +330,21 @@ int TicTacMenu()
         switch (options)
         {
         case 1:
-
-            for(int i = 0; i < 3; i++)
+            do
             {
-                for(int j = 0; j < 3; j++)
-                {
-                    CurrentUser.Tiktak.Board[i][j] = ' ';
-                }
-            } 
-            CurrentUser.Tiktak.turn = ' ';
-            while(TicTacPlay() == 1);
+                printf("Play Again Called\n");
+                clearBoard();
+            } while (TicTacPlay() == 1);
             break;
         case 2:
-            // printf("In Progress\n");
-            while(TicTacPlay() == 1);
+            if(checkWin(CurrentUser.Tiktak.Board, 'X')|| checkWin(CurrentUser.Tiktak.Board, 'O') || checkDraw(CurrentUser.Tiktak.Board))
+            {
+                clearBoard();
+            }
+            while(TicTacPlay() == 1)
+            {
+                clearBoard();
+            }
             break;
         case 3:
             leaderBoard();
@@ -242,7 +366,7 @@ int SaveCurrentUser()
     FILE *file = fopen(ACCOUNT_FILE, "rb+");
     if (file == NULL) {
         printf("Unable to open account file!!");
-        return -1;
+        return 0;
     }
 
     UserNode Dummy;
@@ -253,7 +377,7 @@ int SaveCurrentUser()
             fseek(file, -sizeof(Dummy), SEEK_CUR);
             fwrite(&CurrentUser, sizeof(CurrentUser), 1, file);
             fclose(file);
-            return 0;
+            return 1;
         }
     }
 
@@ -315,7 +439,7 @@ int GameMenu()
                 return 0;
                 break;
             default:
-                printf("\nWrong Choice !!!!!");
+                printf("\nWrong Choice !!!!!\n");
                 break;
         }
     }

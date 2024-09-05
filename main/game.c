@@ -3,9 +3,9 @@
 #include <signal.h>
 
 void handle_sigint(int sig)
-{
-    printf("Exited Successfully\n");
-    SaveCurrentUser();
+{ 
+    if(SaveCurrentUser()) printf("\nSaved State Successfully\n");
+    printf("\nExited Successfully\n");
     exit(0);
 }
 

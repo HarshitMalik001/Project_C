@@ -46,6 +46,7 @@ int checkWin(char Board[3][3], char curPlayer);
 int checkDraw(char Board[3][3]);
 int isValid(char Board[3][3], int row, int col);
 void PlayerTurn(char Board[3][3], char curPlayer);
+void ComputerTurn(char Board[3][3], char curPlayer);
 int TicTacPlay();
 int leaderBoard();
 int TicTacMenu();

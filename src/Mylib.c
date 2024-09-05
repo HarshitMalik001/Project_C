@@ -174,9 +174,8 @@ int login()
     return -1;
 
 }
-// stop
-//stop
-//stop
+
+
 int Welcome()
 {
     int user_choice = 3;
