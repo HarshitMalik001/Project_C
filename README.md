@@ -2,52 +2,77 @@
 
 Going to build a Game in C hope it will be fun to play
 
+# Project_C
+
+## Table of Contents
+1. [Overview](#overview)
+2. [Project Structure](#project-structure)
+3. [Prerequisites](#prerequisites)
+4. [Compilation Steps](#compilation-steps)
+5. [Features](#features)
+6. [Future Work](#future-work)
+7. [Flow of the Code](#flow-of-the-code)
+8. [License](#license)
+
+
 # 3 in 1 Game Project
 
 ## Overview
 This project is a simple terminal-based game collection with user registration and login functionalities. The project is implemented in C, and it uses custom static libraries to manage the user authentication system.
+
 
 ## Project Structure
 - `include/` : Contains the header files.
 - `src/` : Contains the source files for user management and utilities.
 - `main/` : Contains the main game file.
 
+
 ## Prerequisites
-- GCC compiler
-- Linux environment
+
+- **GCC Compiler**: Ensure you have GCC installed on your Linux system.
+- **Linux Environment**: The project is set up to run on Linux (It can also run on the windows).
 
 ## Compilation Steps
 
-### 1. Compile the Library
-First, compile the `Mylib.c` file into an object file and then create a static library from it.
-```sh
-gcc -c src/Mylib.c -o src/MylibExec.o
-gcc -c src/Game.c -o src/GameExec.o
-ar rcs libMylib.a src/MylibExec.o src/GameExec.o
-```
-### 2. Compile the Game
-Next, compile the main game file (game.c) and link it with the static library to create the final executable.
+To compile and run the project, follow these steps:
 
-```sh
-gcc main/game.c -L. libMylib.a -o main/mygame
-```
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/HarshitMalik001/Project_C.git
+   ```
 
-### Running the Game
+2. Navigate to the project directory and run the `run_linux.sh` script:
+   ```bash
+   cd Project_C
+   ./run_linux.sh
+   ```
 
-```sh
-./main/mygame
-```
+3. Execute the game:
+   ```bash
+   ./main/game
+   ```
+
 
 ## Features
-- User Registration
-- User Login
-- Simple terminal-based games
-- file handling to save and load user data.
 
+- **User Registration**: Create a new user account with a unique username and password.
+- **User Login**: Authenticate existing users to access their game data.
+- **Tic-Tac-Toe**: Play Tic-Tac-Toe against the computer with game state saving and loading.
+- **Leaderboard**: View a leaderboard displaying user statistics, including wins, losses, and draws.
+- **File Handling**: User data and game states are saved to and loaded from files for persistence.
 
 ## Future Work
-- Add more games to the collection.
+
+- **Add More Games**: Expand the project by incorporating additional games into the collection.
+- **Enhanced AI**: Improve the computer's AI for a more challenging gameplay experience.
+- **User Interface**: Develop a more sophisticated user interface for better user interaction.
 
 ## Flow Of the Code
+
 ![How The Code Is Working](https://github.com/user-attachments/assets/fa7f74d0-2d80-4edf-9866-dd3f08c20a93)
- 
+
+## License
+
+This project is open-source and free to use. Feel free to contribute!
+
+
