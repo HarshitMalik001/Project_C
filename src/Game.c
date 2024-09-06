@@ -381,6 +381,7 @@ int TicTacMenu()
             leaderBoard();
             break;
         case 4:
+            clearBoard();
             return 0;
             break;
         default:
