@@ -4,8 +4,8 @@
 #include <stdio.h>
 
 extern UserNode CurrentUser;
-//  printing the game Board
 
+//  printing the game Board
 void printBoard(char Board[3][3])
 {
     ClearScreen();
@@ -76,7 +76,7 @@ void PlayerTurn(char Board[3][3], char curPlayer)
     
     int row,col;
     do {
-        printf("Player %c Turn\n",curPlayer);
+        printf("%s's Turn\n",CurrentUser.username);
 
         if(scanf("%d",&row) != 1)
         {
@@ -149,13 +149,9 @@ void ComputerTurn(char Board[3][3], char curPlayer)
             
         }
     }
-
-
-    // 
     srand(time(NULL));
 
     // To lower the diffuclty we made it so computer always Does'nt Play the best move
-
     if(rand() % 2 == 0){
         // Random Move by computer
         int countEmpty = 0;
@@ -203,6 +199,7 @@ void ComputerTurn(char Board[3][3], char curPlayer)
     return;
 }
 
+
 // Game Entry Point
 
 int TicTacPlay()
@@ -220,7 +217,14 @@ int TicTacPlay()
         if(checkWin(CurrentUser.Tiktak.Board,cur_player)){
             cur_player == 'O' ? CurrentUser.Tiktak.player++ : CurrentUser.Tiktak.computer++; 
             printBoard(CurrentUser.Tiktak.Board);
-            printf("Congratulation player %c Won !!\n",cur_player);
+            if(cur_player == 'O')
+            {
+                printf("Congratulation You Won !!\n");
+            }
+            else
+            {
+                printf("I Guess The Computer is Better than You, Better Luck next Time\n");
+            }
             break;
         }
         else if(checkDraw(CurrentUser.Tiktak.Board)){
@@ -337,8 +341,7 @@ int TicTacMenu()
             options = 5;
         }
         else{
-            while(getchar() != '\n');
-            
+            while(getchar() != '\n'); 
         }
 
         switch (options)
@@ -392,7 +395,7 @@ int TicTacMenu()
 int SnakePlay()
 {
     ClearScreen();
-    printf("InProgress \n");
+    printf("InProgress... :( \n");
     return 0;
 }
 
@@ -453,7 +456,7 @@ int SnakeMenu()
             return 0;
             break;
         default:
-            printf("Please Keep the Input In Between 1 - 3 \n");
+            printf("Please Keep the Input In Between 1 - 4 \n");
             break;
         }
     }

@@ -39,6 +39,8 @@ void get_password(char *password) {
         new_one.c_lflag &= ~(ECHO | ICANON);
         tcsetattr(STDIN_FILENO, TCSANOW, &new_one);
 
+        // There will be problem with terminal if you press ctrl + c while the code is asking for password 
+        // currently thinking of a solution So I hope ou will Not Press ctrl + c while inputing password
         while ((chr = getchar()) != '\n' && chr != EOF) 
         {
             if(chr == '!' ) break;
