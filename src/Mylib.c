@@ -14,51 +14,54 @@ void remove_newline(char *str) {
 }
 
 void get_password(char *password) {
-    int cur = 0;
-    char chr;
-
-#ifdef _WIN32
-    while ((chr = _getch()) != '\r') {
-        if (chr == '\b' && cur > 0) {
-            printf("\b \b");
-            cur--;
-        } else if (chr != '\b') {
-            if (cur < CRED_LEN - 1) {
-                password[cur++] = chr;
-                printf("*");
-            }
-        }
-    }
-    password[cur] = '\0';
-    printf("\n");
-#else
-    struct termios old_one, new_one;
-    tcgetattr(STDIN_FILENO, &old_one);
-    new_one = old_one;
-    new_one.c_lflag &= ~(ECHO | ICANON);
-    tcsetattr(STDIN_FILENO, TCSANOW, &new_one);
-
-    while ((chr = getchar()) != '\n' && chr != EOF) 
-    {
-        if(chr == '!' ) break;
-        if (chr == '\b' || chr == 127) 
-        {
-            if (cur > 0) 
-            {
-                cur--;
+    #ifdef _WIN32
+        int cur = 0;
+        char chr;
+        while ((chr = _getch()) != '\r') {
+            if (chr == '\b' && cur > 0) {
                 printf("\b \b");
+                cur--;
+            } else if (chr != '\b') {
+                if (cur < CRED_LEN - 1) {
+                    password[cur++] = chr;
+                    printf("*");
+                }
             }
-        } 
-        else 
-        {
-            password[cur++] = chr;
-            printf("*");
         }
-    }
-    password[cur] = '\0';
-    tcsetattr(STDIN_FILENO, TCSANOW, &old_one);
-    printf("\n");
-#endif
+        password[cur] = '\0';
+        printf("\n");
+    #else
+        int cur = 0;
+        char chr;
+        struct termios old_one, new_one;
+        tcgetattr(STDIN_FILENO, &old_one);
+        new_one = old_one;
+        new_one.c_lflag &= ~(ECHO | ICANON);
+        tcsetattr(STDIN_FILENO, TCSANOW, &new_one);
+
+        while ((chr = getchar()) != '\n' && chr != EOF) 
+        {
+            if(chr == '!' ) break;
+            if (chr == '\b' || chr == 127) 
+            {
+                if (cur > 0) 
+                {
+                    cur--;
+                    printf("\b \b");
+                }
+            } 
+            else 
+            {
+                if(cur < CRED_LEN - 1){
+                    password[cur++] = chr;
+                    printf("*");
+                }
+            }
+        }
+        password[cur] = '\0';
+        tcsetattr(STDIN_FILENO, TCSANOW, &old_one);
+        printf("\n");
+    #endif
 }
 
 // EnterCred function to enter Credentials used in both rgstr and login 
@@ -66,6 +69,14 @@ int EnterCred(char *username, char *password)
 {
     printf("Enter User Name : ");
     fgets(username, CRED_LEN, stdin);
+
+    if (username[strlen(username) - 1] != '\n')
+    {
+        while (getchar() != '\n');
+        printf("Please Keep Username Length Below 30\n");
+        return -1;
+    }
+
     remove_newline(username);
     printf("Enter Password : ");
     fflush(stdout);  // All the pending output flush 
@@ -90,7 +101,25 @@ int rgstr()
     fseek(file, 0 , SEEK_SET);
 
     printf("Register User\n");
-    EnterCred(username, password);
+
+    if(EnterCred(username, password) == -1)
+    {
+        fclose(file);
+        return 0;
+    }
+
+    if(strlen(username) < 1)
+    {
+        printf("Username Can't Be Empty!!!\n");
+        fclose(file);
+        return 0;
+    }
+    if(strlen(password) < 3)
+    {
+        printf("Please Enter a Password of length 3 or more!!!\n");
+        fclose(file);
+        return 0;
+    }
 
     UserNode Dummy;
     while(fread(&Dummy, sizeof(Dummy), 1, file))
@@ -120,7 +149,6 @@ int rgstr()
             new_user.Tiktak.Board[i][j] = ' ';
         }
     }
-    
 
     fwrite(&new_user, sizeof(new_user), 1, file);
     fclose(file);
@@ -145,8 +173,8 @@ int login()
     EnterCred(Username, Password);
 
     UserNode Dummy;
-    while(fread(&Dummy, sizeof(Dummy), 1, file)){
-        // printf("\n%s %s\n",Dummy.username,Dummy.pswd);
+    while(fread(&Dummy, sizeof(Dummy), 1, file))
+    {
         if(strcmp(Dummy.username, Username) == 0 && strcmp(Dummy.pswd, Password) == 0)
         {
             strcpy(CurrentUser.username, Dummy.username);
@@ -193,7 +221,7 @@ int Welcome()
         {
             while(getchar() != '\n');
             ClearScreen();
-            printf("Please Keep the Input In Between 1 - 3 \n");
+            printf("Please Do Not Enter any Non-Integer Input \n");
             user_choice = 4;
         }
         else{
@@ -220,11 +248,12 @@ int Welcome()
             return -1;
             break;
         default:
-            printf("Wrong Choice !!!!!\n");
+            printf("Please Keep the Input In Between 1 - 3 \n");
             break;
         }
         user_choice = 4;
     }
+    return 0;
 }
 
 // To Clear the screen after each operation

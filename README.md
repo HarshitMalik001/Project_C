@@ -1,9 +1,5 @@
 # Project_C
 
-Going to build a Game in C hope it will be fun to play
-
-# Project_C
-
 ## Table of Contents
 1. [Overview](#overview)
 2. [Project Structure](#project-structure)

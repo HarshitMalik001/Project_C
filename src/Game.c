@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 extern UserNode CurrentUser;
+//  printing the game Board
 
 void printBoard(char Board[3][3])
 {
@@ -29,6 +30,8 @@ void printBoard(char Board[3][3])
     printf("\n\n");
 }
 
+
+// check if curPlayer have Won
 int checkWin(char Board[3][3], char curPlayer)
 {
     for(int i = 0; i < 3; i++)
@@ -41,6 +44,7 @@ int checkWin(char Board[3][3], char curPlayer)
     return  0;
 }
 
+// check if it's a draw
 int checkDraw(char Board[3][3])
 {
     for(int i = 0; i < 3; i++)
@@ -53,14 +57,14 @@ int checkDraw(char Board[3][3])
     return 1;
 }
 
-
+// check if the move is valid
 int isValid(char Board[3][3], int row, int col)
 {
     if(row < 1 || row > 3 || col < 1 || col > 3 || Board[row - 1][col - 1] != ' ') return 0;
     return 1;
 }
 
-
+// Player Turn 
 void PlayerTurn(char Board[3][3], char curPlayer)
 {
     if (curPlayer == 'X')
@@ -92,6 +96,7 @@ void PlayerTurn(char Board[3][3], char curPlayer)
     Board[row - 1][col - 1] = curPlayer;
 }
 
+// Computer Turn
 void ComputerTurn(char Board[3][3], char curPlayer)
 {
 
@@ -112,6 +117,7 @@ void ComputerTurn(char Board[3][3], char curPlayer)
     }
     printf("!\n");
     fflush(stdout);
+
 
     // check if computer can win in next move
     for(int i = 0; i < 3; i++)
@@ -197,6 +203,8 @@ void ComputerTurn(char Board[3][3], char curPlayer)
     return;
 }
 
+// Game Entry Point
+
 int TicTacPlay()
 {
     char cur_player;
@@ -233,6 +241,8 @@ int TicTacPlay()
     return 0;
 }
 
+
+// Compare Users for LeaderBoard
 int compareUsers(const void *a, const void *b) {
     UserNode *userA = (UserNode *)a;
     UserNode *userB = (UserNode *)b;
@@ -246,6 +256,7 @@ int compareUsers(const void *a, const void *b) {
     return userB->Tiktak.draw - userA->Tiktak.draw;
 }
 
+// LeaderBoard
 
 int leaderBoard()
 {
@@ -291,7 +302,7 @@ int leaderBoard()
     return 0;
 }
 
-
+//  Empty the array 
 void clearBoard()
 {
     for(int i = 0; i < 3; i++)
@@ -304,6 +315,8 @@ void clearBoard()
     CurrentUser.Tiktak.turn = ' ';
 }
 
+
+//  Menu for Tictactoe
 int TicTacMenu()
 {
     while(1)
@@ -320,16 +333,31 @@ int TicTacMenu()
         if(scanf("%d",&options) != 1)
         {
             while(getchar() != '\n');
-            printf("Please Keep the Input In Between 1 - 3 \n");
+            printf("Please Do Not Enter A Non-Integer Value \n");
             options = 5;
         }
         else{
             while(getchar() != '\n');
+            
         }
 
         switch (options)
         {
         case 1:
+            printf("All The Previous Data will be deleted Enter 1 to confirm : ");
+            int n;
+            if(scanf("%d",&n) != 1)
+            {
+                while(getchar() != '\n');
+                n = 0;
+            }
+            
+            if(n != 1)
+            {
+                ClearScreen();
+                continue;
+            };
+
             do
             {
                 printf("Play Again Called\n");
@@ -353,7 +381,7 @@ int TicTacMenu()
             return 0;
             break;
         default:
-            printf("Invalid Number\n");
+            printf("Please Keep the Input In Between 1 - 4 \n");
             break;
         }
     }
@@ -361,6 +389,80 @@ int TicTacMenu()
 }
 
 
+int SnakePlay()
+{
+    ClearScreen();
+    printf("InProgress \n");
+    return 0;
+}
+
+// Game Menu For Snake & Fruits (Currently Incomplete); 
+int SnakeMenu()
+{
+    while(1)
+    {
+        printf(" Welcome To Snake & Fruits !!!! \n");
+        printf("\n1. Start New Game\n");
+        printf("2. LOAD Game \n");
+        printf("3. LeaderBoard \n");
+        printf("4. Go back\n");
+        printf("Your Choice: ");
+
+        int options = 4;
+
+        if(scanf("%d",&options) != 1)
+        {
+            while(getchar() != '\n');
+            printf("Please Do Not Enter A Non-Integer Value \n");
+            options = 5;
+        }
+        else{
+            while(getchar() != '\n');
+        }
+
+        switch (options)
+        {
+        case 1:
+            printf("All The Previous Data will be deleted Enter 1 to confirm : ");
+            int n;
+            if(scanf("%d",&n) != 1)
+            {
+                while(getchar() != '\n');
+                n = 0;
+            }
+            
+            if(n != 1)
+            {
+                ClearScreen();
+                continue;
+            };
+
+            while (SnakePlay() == 1);
+            break;
+
+        case 2:
+            ClearScreen();
+            printf("In Progress\n");
+            break;
+        case 3:
+            // leaderBoard();
+            ClearScreen();
+            printf("In Progress\n");
+            break;
+        case 4:
+            return 0;
+            break;
+        default:
+            printf("Please Keep the Input In Between 1 - 3 \n");
+            break;
+        }
+    }
+    return 0;
+}
+
+
+
+//  Save the state of current User
 int SaveCurrentUser()
 {
     FILE *file = fopen(ACCOUNT_FILE, "rb+");
@@ -369,6 +471,7 @@ int SaveCurrentUser()
         return 0;
     }
 
+    // Overwriting the previous data of User with new one
     UserNode Dummy;
     while(fread(&Dummy, sizeof(Dummy), 1, file))
     {
@@ -386,6 +489,8 @@ int SaveCurrentUser()
     return 0;
 }
 
+
+// Menu for Games
 int GameMenu()
 {
     ClearScreen();
@@ -406,18 +511,19 @@ int GameMenu()
         printf("\nWelcome To 3 in 1 Game !!!!! \n");
         printf("Options :- \n");
         printf("1. Tic-Tac-Toe \n");
-        printf("2. Logout \n");
-        printf("3. Exit \n");
+        printf("2. Snake&Fruit \n");
+        printf("3. Logout \n");
+        printf("4. Exit \n");
         printf("Your Choice: ");
 
-        int option = 2;
+        int option = 5;
 
         if(scanf("%d",&option) != 1)
         {
             while(getchar() != '\n');
             ClearScreen();
-            printf("Please Keep the Input In Between 1 - 3 \n");
-            option = 4;
+            printf("Please Do Not Enter any Non-Integer Input \n");
+            option = 5;
         }
         else
         {
@@ -430,16 +536,19 @@ int GameMenu()
                 TicTacMenu();
                 break;
             case 2:
+                SnakeMenu();
+                break;
+            case 3:
                 islogged = 0;
                 SaveCurrentUser();
                 continue;
                 break;
-            case 3:
+            case 4:
                 SaveCurrentUser();
                 return 0;
                 break;
             default:
-                printf("\nWrong Choice !!!!!\n");
+                printf("Please Keep the Input In Between 1 - 4 \n");
                 break;
         }
     }
