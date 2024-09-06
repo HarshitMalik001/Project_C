@@ -224,7 +224,7 @@ int Welcome()
             while(getchar() != '\n');
             ClearScreen();
             printf("Please Do Not Enter any Non-Integer Input \n");
-            user_choice = 4;
+            user_choice = 4; 
         }
         else{
             while(getchar() != '\n');
