@@ -90,6 +90,7 @@ void PlayerTurn(char Board[3][3], char curPlayer)
             printf("Please Keep the Input In Between 1 - 3 \n");
             continue;
         }
+        while (getchar() != '\n');
     }
     while(!isValid(Board, row , col));
 
@@ -205,7 +206,7 @@ void ComputerTurn(char Board[3][3], char curPlayer)
 int TicTacPlay()
 {
     char cur_player;
-    srand(time(NULL));
+    // srand(time(NULL));
     if(CurrentUser.Tiktak.turn == ' ') cur_player = rand() % 2 == 0 ? 'O' : 'X';
     else cur_player = CurrentUser.Tiktak.turn;
 
@@ -323,6 +324,7 @@ void clearBoard()
 //  Menu for Tictactoe
 int TicTacMenu()
 {
+    srand(time(NULL));
     while(1)
     {
         printf(" Welcome To Tic-Tac-Toe !!!! \n");
